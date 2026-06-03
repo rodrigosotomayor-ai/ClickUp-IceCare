@@ -358,7 +358,7 @@ button { font-family: var(--font); cursor: pointer; border: none; background: no
 ───────────────────────────────────────────── */
 .charts-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
@@ -553,6 +553,172 @@ button { font-family: var(--font); cursor: pointer; border: none; background: no
 .ani { opacity: 0; animation: fadeUp .45s var(--ease) forwards; }
 .d1{animation-delay:.05s}.d2{animation-delay:.12s}.d3{animation-delay:.18s}
 .d4{animation-delay:.24s}.d5{animation-delay:.30s}.d6{animation-delay:.36s}
+
+/* ─────────────────────────────────────────────
+   SERVICES PANEL
+───────────────────────────────────────────── */
+.services-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.service-block {
+  background: var(--sf);
+  border: .5px solid var(--bd);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: background var(--tr), border-color var(--tr);
+}
+.service-block:hover { border-color: var(--bd2); }
+.service-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: .5px solid var(--bd);
+  cursor: pointer;
+  user-select: none;
+}
+.service-hdr-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.service-pill {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.service-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tx);
+  letter-spacing: -.1px;
+}
+.service-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.service-counts {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sc-chip {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 100px;
+}
+.sc-pend { background: var(--amber2); color: var(--amber); }
+.sc-prog { background: var(--blue2); color: var(--blue); }
+.sc-done { background: var(--ac2); color: var(--ac); }
+.service-toggle {
+  font-size: 12px;
+  color: var(--tx3);
+  transition: transform var(--tr);
+  flex-shrink: 0;
+}
+.service-toggle.open { transform: rotate(180deg); }
+.service-body {
+  display: none;
+  padding: 10px;
+}
+.service-body.open { display: block; }
+.service-lists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+}
+.service-list-col {
+  background: var(--sf2);
+  border: .5px solid var(--bd);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.slc-hdr {
+  padding: 8px 10px 6px;
+  border-bottom: .5px solid var(--bd);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.slc-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.slc-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--tx2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.slc-cnt {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--tx3);
+  margin-left: auto;
+}
+.slc-body { padding: 6px; }
+.slc-task {
+  display: block;
+  padding: 6px 8px;
+  border-radius: 7px;
+  border: .5px solid var(--bd);
+  margin-bottom: 4px;
+  background: var(--sf);
+  cursor: pointer;
+  transition: background var(--tr), border-color var(--tr), transform .1s;
+  position: relative;
+  overflow: hidden;
+}
+.slc-task:last-child { margin-bottom: 0; }
+.slc-task:hover { background: var(--sf3); border-color: var(--bd2); transform: translateY(-1px); }
+.slc-task[data-p="high"]::before, .slc-task[data-p="urgent"]::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--amber);
+}
+.slc-task-name {
+  font-size: 10px;
+  color: var(--tx);
+  line-height: 1.4;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.slc-task-foot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.slc-status {
+  font-size: 8.5px;
+  padding: 1px 5px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-family: var(--mono);
+}
+.slc-date {
+  font-size: 8.5px;
+  color: var(--tx3);
+  font-family: var(--mono);
+  margin-left: auto;
+}
+.slc-date.ov { color: var(--red); }
+.slc-avs { display: flex; margin-left: auto; }
+.slc-av {
+  width: 15px; height: 15px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 6.5px; font-weight: 700; margin-left: -3px;
+  border: 1.5px solid var(--sf); flex-shrink: 0;
+  transition: border-color var(--tr);
+}
+.slc-av:first-child { margin-left: 0; }
+.slc-empty { font-size: 10px; color: var(--tx3); text-align: center; padding: 10px 6px; }
+
 </style>
 </head>
 <body>
@@ -678,10 +844,7 @@ button { font-family: var(--font); cursor: pointer; border: none; background: no
 
     <!-- CHARTS ROW -->
     <div class="charts-row ani d3">
-      <div class="card">
-        <div class="card-ttl">Carga del equipo <em id="team-ct">—</em></div>
-        <div id="team-chart"></div>
-      </div>
+
       <div class="card">
         <div class="card-ttl">Distribución por área <em id="area-ct">—</em></div>
         <div id="donut-chart"></div>
@@ -715,6 +878,12 @@ button { font-family: var(--font); cursor: pointer; border: none; background: no
         </div>
         <div class="col-body" id="k-done"></div>
       </div>
+    </div>
+
+    <!-- SERVICES PANEL -->
+    <div class="card ani d5">
+      <div class="card-ttl">Por tipo de servicio <em id="service-ct">—</em></div>
+      <div class="services-panel" id="services-panel"></div>
     </div>
 
     <!-- TIMELINE -->
@@ -841,25 +1010,6 @@ function mr(v){
 }
 
 /* ── CHARTS ── */
-function renderTeam(tasks){
-  const act=tasks.filter(t=>cls(t.status)!=='done');
-  const c={};act.forEach(t=>(t.assignees||[]).forEach(a=>{const n=a.username||'?';c[n]=(c[n]||0)+1;}));
-  const sorted=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  document.getElementById('team-ct').textContent=sorted.length+' personas';
-  if(!sorted.length){document.getElementById('team-chart').innerHTML='<div class="empty">Sin datos</div>';return;}
-  const mx=sorted[0][1];
-  document.getElementById('team-chart').innerHTML=`<div class="team-rows">${sorted.map(([nm,ct])=>{
-    const cv=avc(nm);
-    const bc=ct>=mx*.75?'var(--amber)':ct>=mx*.45?'var(--blue)':'var(--ac)';
-    return`<div class="team-row">
-      <div class="t-av" style="background:${cv.bg};color:${cv.t}">${ini(nm)}</div>
-      <span class="t-name" title="${nm}">${nm.split(' ')[0]}</span>
-      <div class="t-bar-track"><div class="t-bar-fill" style="width:0%;background:${bc}" data-w="${Math.round(ct/mx*100)}"></div></div>
-      <span class="t-cnt">${ct}</span>
-    </div>`;
-  }).join('')}</div>`;
-  setTimeout(()=>document.querySelectorAll('.t-bar-fill').forEach(el=>el.style.width=el.dataset.w+'%'),80);
-}
 
 function renderDonut(tasks){
   const c={};tasks.forEach(t=>{const l=t.list_name||'Sin lista';c[l]=(c[l]||0)+1;});
@@ -1005,6 +1155,142 @@ function renderTimeline(tasks,y,m){
     </div>`;
 }
 
+
+/* ── SERVICE COLORS ── */
+const SERVICE_COLORS = [
+  { dark: '#74AAFF', light: '#1A55D4' },  // Redes Sociales
+  { dark: '#CCFF44', light: '#3D7A00' },  // Email Marketing
+  { dark: '#FFB84D', light: '#965400' },  // Paid Media
+  { dark: '#FF6B6B', light: '#B81010' },  // Campaña
+  { dark: '#3DDBC8', light: '#0A7A6A' },  // Reportería
+  { dark: '#C49BFF', light: '#5C18CC' },  // Benchmarking
+  { dark: '#F472C8', light: '#A0107A' },  // Edición Gráfica
+  { dark: '#FF8C69', light: '#B83E10' },  // Marketing Interno
+  { dark: '#86EF70', light: '#267A10' },  // Reunión
+];
+const SERVICE_NAMES = [
+  'Redes Sociales','Email Marketing','Paid Media','Campaña',
+  'Reportería','Benchmarking','Edición Gráfica','Marketing Interno IceCare','Reunión'
+];
+function svc(name) {
+  const idx = SERVICE_NAMES.indexOf(name);
+  if (idx === -1) return theme === 'dark' ? '#74AAFF' : '#1A55D4';
+  const c = SERVICE_COLORS[idx % SERVICE_COLORS.length];
+  return theme === 'dark' ? c.dark : c.light;
+}
+function svcBg(name) {
+  const hex = svc(name);
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${theme==='dark'?0.14:0.10})`;
+}
+
+function renderServices(tasks) {
+  // Only tasks that have the service custom field set
+  const withService = tasks.filter(t => t.service);
+  document.getElementById('service-ct').textContent = withService.length + ' con servicio asignado';
+
+  if (!withService.length) {
+    document.getElementById('services-panel').innerHTML =
+      '<div class="empty" style="padding:1.5rem">Ninguna tarea tiene el campo de servicio asignado</div>';
+    return;
+  }
+
+  // Group by service
+  const byService = {};
+  withService.forEach(t => {
+    const s = t.service;
+    if (!byService[s]) byService[s] = [];
+    byService[s].push(t);
+  });
+
+  // Sort services by task count desc
+  const services = Object.entries(byService).sort((a,b) => b[1].length - a[1].length);
+
+  const blocks = services.map(([service, stasks], si) => {
+    const color = svc(service);
+    const bg = svcBg(service);
+    const pend = stasks.filter(t => cls(t.status) === 'pending');
+    const prog = stasks.filter(t => ['progress','review'].includes(cls(t.status)));
+    const done = stasks.filter(t => cls(t.status) === 'done');
+
+    // Group by list within this service
+    const byList = {};
+    stasks.forEach(t => {
+      const l = t.list_name || 'Sin lista';
+      if (!byList[l]) byList[l] = [];
+      byList[l].push(t);
+    });
+
+    const listCols = Object.entries(byList).map(([listName, ltasks]) => {
+      const listColor = lc(listName);
+      const listBgColor = lcHex(listName, theme === 'dark' ? 0.14 : 0.10);
+      const taskItems = ltasks.map(t => {
+        const cat = cls(t.status);
+        const ov = isOv(t.due_date, cat);
+        const dt = fmtDate(t.due_date);
+        const statusColor = cat==='done'?'var(--ac)':cat==='progress'||cat==='review'?'var(--blue)':'var(--amber)';
+        const statusBg = cat==='done'?'var(--ac2)':cat==='progress'||cat==='review'?'var(--blue2)':'var(--amber2)';
+        const statusLbl = cat==='done'?'Entregado':cat==='review'?'Revisión':cat==='progress'?'Progreso':'Pendiente';
+        const avs = (t.assignees||[]).slice(0,2).map(a => {
+          const c = avc(a.username||'');
+          return `<span class="slc-av" style="background:${c.bg};color:${c.t}" title="${a.username||''}">${ini(a.username||'')}</span>`;
+        }).join('');
+        return `<a class="slc-task" href="${t.url}" target="_blank" rel="noopener" data-p="${t.priority||''}">
+          <div class="slc-task-name">${t.name}</div>
+          <div class="slc-task-foot">
+            <span class="slc-status" style="background:${statusBg};color:${statusColor}">${statusLbl}</span>
+            ${dt ? `<span class="slc-date${ov?' ov':''}">${dt}${ov?' ⚠':''}</span>` : ''}
+            ${avs ? `<div class="slc-avs">${avs}</div>` : ''}
+          </div>
+        </a>`;
+      }).join('');
+
+      return `<div class="service-list-col">
+        <div class="slc-hdr">
+          <div class="slc-dot" style="background:${listColor}"></div>
+          <span class="slc-name" title="${listName}">${listName}</span>
+          <span class="slc-cnt">${ltasks.length}</span>
+        </div>
+        <div class="slc-body">
+          ${taskItems || '<div class="slc-empty">Sin tareas</div>'}
+        </div>
+      </div>`;
+    }).join('');
+
+    const blockId = 'svc-body-' + si;
+    return `<div class="service-block">
+      <div class="service-hdr" onclick="toggleService('${blockId}')">
+        <div class="service-hdr-left">
+          <div class="service-pill" style="background:${color}"></div>
+          <span class="service-name">${service}</span>
+          <div class="service-counts">
+            ${pend.length ? `<span class="sc-chip sc-pend">${pend.length} pend.</span>` : ''}
+            ${prog.length ? `<span class="sc-chip sc-prog">${prog.length} prog.</span>` : ''}
+            ${done.length ? `<span class="sc-chip sc-done">${done.length} ent.</span>` : ''}
+          </div>
+        </div>
+        <div class="service-meta">
+          <span style="font-size:10px;color:var(--tx3);font-family:var(--mono)">${stasks.length} tareas · ${Object.keys(byList).length} listas</span>
+          <i class="ti ti-chevron-down service-toggle${si===0?' open':''}" id="tog-${si}"></i>
+        </div>
+      </div>
+      <div class="service-body${si===0?' open':''}" id="${blockId}">
+        <div class="service-lists-grid">${listCols}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('services-panel').innerHTML = blocks;
+}
+
+function toggleService(bodyId) {
+  const body = document.getElementById(bodyId);
+  const togIdx = bodyId.replace('svc-body-','');
+  const tog = document.getElementById('tog-' + togIdx);
+  body.classList.toggle('open');
+  if (tog) tog.classList.toggle('open');
+}
+
 /* ── MAIN RENDER ── */
 function render(){
   const mv=document.getElementById('month-sel').value;
@@ -1057,9 +1343,9 @@ function render(){
   document.getElementById('k-done').innerHTML=done.length?done.map(taskCard).join(''):emptyCol('Sin entregas');
 
   // charts
-  renderTeam(tasks);
   renderDonut(tasks);
   renderWeekly(tasks,s,e);
+  renderServices(tasks);
   renderTimeline(tasks,y,m);
 }
 
