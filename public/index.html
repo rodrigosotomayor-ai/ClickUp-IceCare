@@ -1094,7 +1094,7 @@ function renderTimeline(tasks,y,m){
 
   document.getElementById('tl-today-lbl').textContent=isCurrentMonth?`Hoy: ${today.toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'})}`:'';
 
-  const withDates=tasks.filter(t=>t.due_date&&parseInt(t.due_date)>0)
+  const withDates=tasks.filter(t=>t.service&&t.due_date&&parseInt(t.due_date)>0)
     .sort((a,b)=>parseInt(a.due_date)-parseInt(b.due_date));
 
   if(!withDates.length){
@@ -1362,7 +1362,7 @@ function render(){
   renderDonut(tasks);
   renderWeekly(tasks,s,e);
   renderServices(tasks);
-  renderTimeline(tasks,y,m);
+  renderTimeline(svcTasks,y,m);
 }
 
 /* ── LIVE DATA ── */
