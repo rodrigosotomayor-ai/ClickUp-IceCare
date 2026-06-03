@@ -735,13 +735,16 @@ button { font-family: var(--font); cursor: pointer; border: none; background: no
 </div><!-- /main -->
 
 <script>
+/* ── STATE (must be first) ── */
+let TASKS = [];
+let _loading = false;
+
 /* ── THEME ── */
 const html = document.documentElement;
 let theme = localStorage.getItem('ic-t') || 'dark';
 function applyTheme(t) {
   theme = t; html.setAttribute('data-theme', t);
   localStorage.setItem('ic-t', t);
-  // re-render so list colors adapt to theme
   if (TASKS.length) render();
 }
 applyTheme(theme);
@@ -1061,9 +1064,6 @@ function render(){
 }
 
 /* ── LIVE DATA ── */
-let TASKS = [];
-let _loading = false;
-
 function showLoadingState() {
   document.getElementById('tot-n').textContent = '...';
 }
