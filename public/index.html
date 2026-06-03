@@ -846,7 +846,7 @@ button { font-family: var(--font); cursor: pointer; border: none; background: no
     <div class="charts-row ani d3">
 
       <div class="card">
-        <div class="card-ttl">Distribución por área <em id="area-ct">—</em></div>
+        <div class="card-ttl">Distribución por servicio <em id="area-ct">—</em></div>
         <div id="donut-chart"></div>
       </div>
       <div class="card">
@@ -1012,26 +1012,40 @@ function mr(v){
 /* ── CHARTS ── */
 
 function renderDonut(tasks){
-  const c={};tasks.forEach(t=>{const l=t.list_name||'Sin lista';c[l]=(c[l]||0)+1;});
-  const ent=Object.entries(c).sort((a,b)=>b[1]-a[1]);
-  const tot=ent.reduce((s,[,v])=>s+v,0);
-  document.getElementById('area-ct').textContent=[...new Set(tasks.map(t=>t.list_name))].length+' áreas';
-  if(!tot){document.getElementById('donut-chart').innerHTML='<div class="empty">Sin datos</div>';return;}
-  const R=52,cx=62,cy=62,sw=14,circ=2*Math.PI*R;
+  // Only tasks with service field assigned
+  const withSvc = tasks.filter(t => t.service);
+  const c = {};
+  withSvc.forEach(t => { c[t.service] = (c[t.service]||0) + 1; });
+  const ent = Object.entries(c).sort((a,b) => b[1]-a[1]);
+  const tot = ent.reduce((s,[,v]) => s+v, 0);
+  document.getElementById('area-ct').textContent = tot + ' con servicio';
+  if (!tot) {
+    document.getElementById('donut-chart').innerHTML = '<div class="empty">Sin tareas con servicio asignado</div>';
+    return;
+  }
+  const R=52, cx=62, cy=62, sw=14, circ=2*Math.PI*R;
   let off=0;
-  const sl=ent.map(([nm,v])=>{
-    const p=v/tot;const da=circ*p;const dg=circ*(1-p);
-    const el=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${lc(nm)}" stroke-width="${sw}" stroke-dasharray="${da.toFixed(2)} ${dg.toFixed(2)}" stroke-dashoffset="${(-(off*circ)+circ/4).toFixed(2)}" style="transform-origin:${cx}px ${cy}px"/>`;
-    off+=p; return el;
+  const sl = ent.map(([nm,v]) => {
+    const p=v/tot, da=circ*p, dg=circ*(1-p);
+    const color = svc(nm);
+    const el = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-dasharray="${da.toFixed(2)} ${dg.toFixed(2)}" stroke-dashoffset="${(-(off*circ)+circ/4).toFixed(2)}" style="transform-origin:${cx}px ${cy}px"/>`;
+    off += p; return el;
   });
-  const svg=`<svg width="124" height="124" viewBox="0 0 124 124">
+  const pct = v => tot ? Math.round(v/tot*100) : 0;
+  const svg = `<svg width="124" height="124" viewBox="0 0 124 124">
     <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--sf3)" stroke-width="${sw}"/>
     ${sl.join('')}
     <text x="${cx}" y="${cy+1}" text-anchor="middle" dominant-baseline="middle" font-family="DM Mono,monospace" font-size="16" font-weight="500" fill="var(--tx)">${tot}</text>
     <text x="${cx}" y="${cy+16}" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="var(--tx3)">tareas</text>
   </svg>`;
-  const leg=ent.slice(0,8).map(([nm,v])=>`<div class="d-row"><div class="d-dot" style="background:${lc(nm)}"></div><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9.5px" title="${nm}">${nm}</span><span class="d-val">${v}</span></div>`).join('');
-  document.getElementById('donut-chart').innerHTML=`<div class="donut-wrap"><div class="donut-svg-wrap">${svg}</div><div class="donut-leg">${leg}</div></div>`;
+  const leg = ent.map(([nm,v]) => `
+    <div class="d-row">
+      <div class="d-dot" style="background:${svc(nm)}"></div>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9.5px;flex:1" title="${nm}">${nm}</span>
+      <span class="d-val">${v}</span>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--tx3);min-width:28px;text-align:right">${pct(v)}%</span>
+    </div>`).join('');
+  document.getElementById('donut-chart').innerHTML = `<div class="donut-wrap"><div class="donut-svg-wrap">${svg}</div><div class="donut-leg">${leg}</div></div>`;
 }
 
 function renderWeekly(tasks,s,e){
@@ -1305,11 +1319,13 @@ function render(){
     return inT&&(lv==='Todas las listas'||t.list_name===lv);
   });
 
-  const pend=tasks.filter(t=>cls(t.status)==='pending');
-  const prog=tasks.filter(t=>['progress','review'].includes(cls(t.status)));
-  const done=tasks.filter(t=>cls(t.status)==='done');
-  const over=tasks.filter(t=>isOv(t.due_date,cls(t.status)));
-  const tot=tasks.length;
+  // Kanban: only tasks with service field assigned
+  const svcTasks = tasks.filter(t => t.service);
+  const pend=svcTasks.filter(t=>cls(t.status)==='pending');
+  const prog=svcTasks.filter(t=>['progress','review'].includes(cls(t.status)));
+  const done=svcTasks.filter(t=>cls(t.status)==='done');
+  const over=svcTasks.filter(t=>isOv(t.due_date,cls(t.status)));
+  const tot=svcTasks.length;
   const pD=tot?Math.round(done.length/tot*100):0;
   const pP=tot?Math.round(prog.length/tot*100):0;
   const pN=tot?Math.round(pend.length/tot*100):0;
@@ -1317,7 +1333,7 @@ function render(){
   // hero
   document.getElementById('tot-n').textContent=tot;
   document.getElementById('h-pct').textContent=pD+'%';
-  document.getElementById('h-sub').textContent=`de ${tot} tareas completadas este mes`;
+  document.getElementById('h-sub').textContent=`de ${tot} tareas con servicio asignado`;
   setTimeout(()=>{
     const sd=document.getElementById('hs-d');
     if(sd){sd.style.width=pD+'%';document.getElementById('hs-p').style.width=pP+'%';document.getElementById('hs-n').style.width=pN+'%';}
