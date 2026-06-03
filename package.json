@@ -2,5 +2,5 @@
   "name": "icecare-dashboard",
   "version": "1.0.0",
   "description": "Dashboard de proyecto IceCare — Match Agency",
-  "engines": { "node": "18.x" }
+  "engines": { "node": "24.x" }
 }
