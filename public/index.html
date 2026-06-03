@@ -850,8 +850,8 @@ button { font-family: var(--font); cursor: pointer; border: none; background: no
         <div id="donut-chart"></div>
       </div>
       <div class="card">
-        <div class="card-ttl">Actividad semanal <em>tareas cerradas</em></div>
-        <div id="weekly-chart"></div>
+        <div class="card-ttl">Distribución por lista <em id="list-ct">—</em></div>
+        <div id="list-donut-chart"></div>
       </div>
     </div>
 
@@ -1048,21 +1048,39 @@ function renderDonut(tasks){
   document.getElementById('donut-chart').innerHTML = `<div class="donut-wrap"><div class="donut-svg-wrap">${svg}</div><div class="donut-leg">${leg}</div></div>`;
 }
 
-function renderWeekly(tasks,s,e){
-  const w=[0,0,0,0];
-  tasks.filter(t=>cls(t.status)==='done').forEach(t=>{
-    const ts=parseInt(t.date_updated||t.due_date||0);
-    if(ts>=s&&ts<=e)w[wom(ts)]++;
+function renderListDonut(tasks){
+  const c = {};
+  tasks.forEach(t => { c[t.list_name||'Sin lista'] = (c[t.list_name||'Sin lista']||0) + 1; });
+  const ent = Object.entries(c).sort((a,b) => b[1]-a[1]);
+  const tot = ent.reduce((s,[,v]) => s+v, 0);
+  document.getElementById('list-ct').textContent = [...new Set(tasks.map(t=>t.list_name))].length + ' listas';
+  if (!tot) {
+    document.getElementById('list-donut-chart').innerHTML = '<div class="empty">Sin datos</div>';
+    return;
+  }
+  const R=52, cx=62, cy=62, sw=14, circ=2*Math.PI*R;
+  let off=0;
+  const sl = ent.map(([nm,v]) => {
+    const p=v/tot, da=circ*p, dg=circ*(1-p);
+    const color = lc(nm);
+    const el = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-dasharray="${da.toFixed(2)} ${dg.toFixed(2)}" stroke-dashoffset="${(-(off*circ)+circ/4).toFixed(2)}" style="transform-origin:${cx}px ${cy}px"/>`;
+    off += p; return el;
   });
-  const mx=Math.max(...w,1);
-  const bc=['var(--blue)','var(--ac)','var(--blue)','var(--ac)'];
-  document.getElementById('weekly-chart').innerHTML=`<div class="weekly-bars">${w.map((v,i)=>`
-    <div class="wk-col">
-      <span class="wk-v">${v}</span>
-      <div class="wk-bw"><div class="wk-b" style="width:100%;height:0%;background:${bc[i]};opacity:.9" data-h="${Math.round(v/mx*100)}"></div></div>
-      <span class="wk-lbl">S${i+1}</span>
-    </div>`).join('')}</div>`;
-  setTimeout(()=>document.querySelectorAll('.wk-b').forEach(el=>el.style.height=el.dataset.h+'%'),80);
+  const pct = v => tot ? Math.round(v/tot*100) : 0;
+  const svg = `<svg width="124" height="124" viewBox="0 0 124 124">
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--sf3)" stroke-width="${sw}"/>
+    ${sl.join('')}
+    <text x="${cx}" y="${cy+1}" text-anchor="middle" dominant-baseline="middle" font-family="DM Mono,monospace" font-size="16" font-weight="500" fill="var(--tx)">${tot}</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="var(--tx3)">tareas</text>
+  </svg>`;
+  const leg = ent.map(([nm,v]) => `
+    <div class="d-row">
+      <div class="d-dot" style="background:${lc(nm)}"></div>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;font-size:9.5px" title="${nm}">${nm}</span>
+      <span class="d-val">${v}</span>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--tx3);min-width:28px;text-align:right">${pct(v)}%</span>
+    </div>`).join('');
+  document.getElementById('list-donut-chart').innerHTML = `<div class="donut-wrap"><div class="donut-svg-wrap">${svg}</div><div class="donut-leg">${leg}</div></div>`;
 }
 
 /* ── TASK CARD ── */
@@ -1360,7 +1378,7 @@ function render(){
 
   // charts
   renderDonut(tasks);
-  renderWeekly(tasks,s,e);
+  renderListDonut(svcTasks);
   renderServices(tasks);
   renderTimeline(svcTasks,y,m);
 }
